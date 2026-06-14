@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <title>P2P Monitor</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="theme-color" content="#050914">
+  <style>
+    :root {
+      --bg: #050914;
+      --panel: rgba(8, 14, 30, 0.84);
+      --text: #eef4ff;
+      --muted: rgba(238, 244, 255, 0.66);
+      --border: rgba(148, 163, 184, 0.22);
+      --accent: #7dd3fc;
+      --danger: #fb7185;
+      --radius: 24px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 18% 12%, rgba(125, 211, 252, 0.15), transparent 30%),
+        radial-gradient(circle at 82% 18%, rgba(99, 102, 241, 0.12), transparent 32%),
+        var(--bg);
+      color: var(--text);
+      font-family: Arial, Tahoma, sans-serif;
+    }
+
+    .shell {
+      position: fixed;
+      inset: 0;
+      background: var(--bg);
+    }
+
+    iframe {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+      display: block;
+      background: var(--bg);
+    }
+
+    .loading {
+      position: fixed;
+      inset: 0;
+      z-index: 5;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      background:
+        radial-gradient(circle at 50% 35%, rgba(125, 211, 252, 0.14), transparent 28%),
+        rgba(5, 9, 20, 0.96);
+      transition: opacity 220ms ease, visibility 220ms ease;
+    }
+
+    .loading.is-hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .loading-card {
+      width: min(440px, 100%);
+      padding: 28px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--panel);
+      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.38);
+      backdrop-filter: blur(18px);
+      text-align: center;
+    }
+
+    .mark {
+      width: 48px;
+      height: 48px;
+      margin: 0 auto 16px;
+      border-radius: 16px;
+      border: 1px solid rgba(125, 211, 252, 0.35);
+      background: linear-gradient(135deg, rgba(125, 211, 252, 0.18), rgba(99, 102, 241, 0.18));
+      display: grid;
+      place-items: center;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 22px;
+      line-height: 1.35;
+    }
+
+    p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.8;
+      font-size: 14px;
+    }
+
+    .bar {
+      overflow: hidden;
+      position: relative;
+      height: 4px;
+      margin-top: 20px;
+      border-radius: 999px;
+      background: rgba(148, 163, 184, 0.18);
+    }
+
+    .bar::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      width: 42%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+      animation: run 1.15s ease-in-out infinite;
+    }
+
+    .fallback {
+      position: fixed;
+      inset: auto 18px 18px 18px;
+      z-index: 6;
+      display: none;
+      padding: 16px;
+      border: 1px solid rgba(251, 113, 133, 0.35);
+      border-radius: 18px;
+      background: rgba(45, 11, 20, 0.86);
+      color: #fff;
+      font-size: 14px;
+      line-height: 1.7;
+      text-align: center;
+      backdrop-filter: blur(14px);
+    }
+
+    .fallback a {
+      color: #fff;
+      font-weight: 800;
+    }
+
+    @keyframes run {
+      0% { transform: translateX(-110%); }
+      100% { transform: translateX(260%); }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell" aria-label="P2P Monitor Wrapper">
+    <iframe
+      id="p2pFrame"
+      title="P2P Monitor"
+      src="https://script.google.com/a/macros/inzo.co/s/AKfycbxT5SZf8jiw22OYH4QW96KO3X3nKJrRSV7zfHqmLdtwZlinlsxqEcuvhEbwZ4evn2W4MQ/exec"
+      allow="clipboard-read; clipboard-write"
+      referrerpolicy="no-referrer-when-downgrade">
+    </iframe>
+
+    <section class="loading" id="loadingScreen" aria-live="polite">
+      <div class="loading-card">
+        <div class="mark">P2P</div>
+        <h1>جاري تحميل Monitor Data</h1>
+        <p>Monitor Data</p>
+        <div class="bar" aria-hidden="true"></div>
+      </div>
+    </section>
+
+    <div class="fallback" id="fallbackBox">
+      لو استمر التحميل أكثر من الطبيعي، ارجع للمدير
+      <a href="https://script.google.com/a/macros/inzo.co/s/AKfycbxT5SZf8jiw22OYH4QW96KO3X3nKJrRSV7zfHqmLdtwZlinlsxqEcuvhEbwZ4evn2W4MQ/exec" target="_blank" rel="noopener">هنا</a>.
+    </div>
+  </main>
+
+  <script>
+    (function () {
+      var frame = document.getElementById('p2pFrame');
+      var loader = document.getElementById('loadingScreen');
+      var fallback = document.getElementById('fallbackBox');
+
+      frame.addEventListener('load', function () {
+        window.setTimeout(function () {
+          loader.classList.add('is-hidden');
+        }, 450);
+      });
+
+      window.setTimeout(function () {
+        fallback.style.display = 'block';
+      }, 9000);
+    })();
+  </script>
+</body>
+</html>
